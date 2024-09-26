@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  #googleMap {
+    width: 45%;
+    height: 500px;
+  }
+</style>
+</head>
+<body>
+
+<h1>My First Google Map</h1>
+
+<div id="googleMap"></div>
+
+<script>
+function myMap() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
+function showPosition(position) {
+  var lat = position.coords.latitude;
+  var lng = position.coords.longitude;
+  var mapProp = {
+    center: new google.maps.LatLng(lat, lng),
+    zoom: 15,
+    styles: [
+      {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [
+          { "color": "#0000ff" }
+        ]
+      },
+      {
+        "featureType": "landscape",
+        "elementType": "geometry",
+        "stylers": [
+          { "color": "#00ff00" }
+        ]
+      },
+      {
+        "featureType": "road",
+        "elementType": "geometry",
+        "stylers": [
+          { "color": "#ffff00" }
+        ]
+      },
+      {
+        "featureType": "poi",
+        "elementType": "labels",
+        "stylers": [
+          { "visibility": "off" }
+        ]
+      },
+      {
+        "featureType": "poi.business",
+        "elementType": "labels",
+        "stylers": [
+          { "visibility": "on" }
+        ]
+      }
+    ]
+  };
+  var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+  var marker = new google.maps.Marker({
+    position: new google.maps.LatLng(lat, lng),
+    map: map
+  });
+
+  var request = {
+    location: new google.maps.LatLng(lat, lng),
+    radius: '500',
+    type: ['restaurant']
+  };
+
+  var service = new google.maps.places.PlacesService(map);
+  service.nearbySearch(request, function(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        createMarker(results[i]);
+      }
+    }
+  });
+
+  function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+      map: map,
+      position: placeLoc
+    });
+  }
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJpaETdPjLg4R29js1DxLykXEjjKwTnV8&libraries=places&callback=myMap"></script>
+
+</body>
+</html>
